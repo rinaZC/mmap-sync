@@ -155,7 +155,7 @@ impl<'a, WL: WriteLockStrategy<'a>> StateContainer<WL> {
 
         // Only add mode on Unix-based systems to allow read/write from owner/group only
         #[cfg(unix)]
-        opts.mode(0o660);
+        opts.mode(0o666);
 
         let state_file = opts.open(&self.state_path).map_err(FailedStateRead)?;
 

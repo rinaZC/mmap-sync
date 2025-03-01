@@ -51,7 +51,7 @@ impl DataContainer {
 
             // Only add mode on Unix-based systems
             #[cfg(unix)]
-            opts.mode(0o640);
+            opts.mode(0o644);
 
             let data_file = opts
                 .open(version.path(&self.path_prefix))
