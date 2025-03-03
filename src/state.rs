@@ -153,11 +153,16 @@ impl<'a, WL: WriteLockStrategy<'a>> StateContainer<WL> {
         let mut opts = OpenOptions::new();
         opts.read(true).write(true).create(create);
 
-        // Only add mode on Unix-based systems to allow read/write from owner/group only
+        // Only add mode on Unix-based systems to allow read/write from owner/group/other
         #[cfg(unix)]
         opts.mode(0o666);
 
         let state_file = opts.open(&self.state_path).map_err(FailedStateRead)?;
+
+        // Explicitly set the permissions to 666 due to umask 0022
+        #[cfg(unix)]
+        std::fs::set_permissions(&self.state_path, std::fs::Permissions::from_mode(0o666))
+            .map_err(FailedStateRead)?;
 
         let mut need_init = false;
         // Reset state file size to match exactly `STATE_SIZE`
